@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b12">
+<meta name="description" content="Reproductor de videos para la compu y el celu. Todo se reproduce en tu navegador, sin subir nada.">
+<title>Video Player</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%237c5cff'/%3E%3Cpath d='M26 21v22l17-11z' fill='%23fff' stroke='%23fff' stroke-width='5' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+
+<!-- every icon lives here, use one with <svg class="icon"><use href="#i-play"/></svg> -->
+<svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-play" viewBox="0 0 24 24">
+    <path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24">
+    <rect x="6" y="5" width="4.5" height="14" rx="1.5" fill="currentColor"/>
+    <rect x="13.5" y="5" width="4.5" height="14" rx="1.5" fill="currentColor"/>
+  </symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24">
+    <path d="M17.5 6.5v11L9 12z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M6.5 6v12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-next" viewBox="0 0 24 24">
+    <path d="M6.5 6.5v11L15 12z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M17.5 6v12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-back" viewBox="0 0 24 24">
+    <path d="M5.94 9.5A7 7 0 1 0 12 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M14.5 3.5L12 6l2.5 2.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="12" y="15.6" text-anchor="middle" font-size="7" font-weight="700" font-family="system-ui, sans-serif" fill="currentColor">10</text>
+  </symbol>
+  <symbol id="i-forward" viewBox="0 0 24 24">
+    <path d="M18.06 9.5A7 7 0 1 1 12 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M9.5 3.5L12 6l-2.5 2.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="12" y="15.6" text-anchor="middle" font-size="7" font-weight="700" font-family="system-ui, sans-serif" fill="currentColor">10</text>
+  </symbol>
+  <symbol id="i-volume-high" viewBox="0 0 24 24">
+    <path d="M4 9.5v5a1 1 0 0 0 1 1h3l4.3 3.6a.8.8 0 0 0 1.3-.6V5.5a.8.8 0 0 0-1.3-.6L8 8.5H5a1 1 0 0 0-1 1z" fill="currentColor"/>
+    <path d="M16.5 8.8a4.5 4.5 0 0 1 0 6.4M19 6.2a8 8 0 0 1 0 11.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-volume-low" viewBox="0 0 24 24">
+    <path d="M4 9.5v5a1 1 0 0 0 1 1h3l4.3 3.6a.8.8 0 0 0 1.3-.6V5.5a.8.8 0 0 0-1.3-.6L8 8.5H5a1 1 0 0 0-1 1z" fill="currentColor"/>
+    <path d="M16.5 8.8a4.5 4.5 0 0 1 0 6.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-volume-off" viewBox="0 0 24 24">
+    <path d="M4 9.5v5a1 1 0 0 0 1 1h3l4.3 3.6a.8.8 0 0 0 1.3-.6V5.5a.8.8 0 0 0-1.3-.6L8 8.5H5a1 1 0 0 0-1 1z" fill="currentColor"/>
+    <path d="M16.5 9.5l5 5m0-5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-subtitles" viewBox="0 0 24 24">
+    <rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M7 12.5h3M13 12.5h4M7 15.5h6M16 15.5h1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-pip" viewBox="0 0 24 24">
+    <rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+    <rect x="12" y="11.5" width="6" height="4.5" rx="1" fill="currentColor"/>
+  </symbol>
+  <symbol id="i-pip-exit" viewBox="0 0 24 24">
+    <rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M16 10l-6 5M10 11v4h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="i-fullscreen" viewBox="0 0 24 24">
+    <path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-fullscreen-exit" viewBox="0 0 24 24">
+    <path d="M9 4v3.5A1.5 1.5 0 0 1 7.5 9H4M20 9h-3.5A1.5 1.5 0 0 1 15 7.5V4M15 20v-3.5a1.5 1.5 0 0 1 1.5-1.5H20M4 15h3.5A1.5 1.5 0 0 1 9 16.5V20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-video" viewBox="0 0 24 24">
+    <rect x="2.5" y="4.5" width="19" height="15" rx="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    <path d="M10 9.2v5.6l4.8-2.8z" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24">
+    <path d="M3.5 7.5a2 2 0 0 1 2-2h3.6l2 2h7.4a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24">
+    <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-close" viewBox="0 0 24 24">
+    <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-install" viewBox="0 0 24 24">
+    <path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+</svg>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-logo"><svg class="icon"><use href="#i-play"/></svg></span>
+      Video Player
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" id="installBtn" type="button" aria-label="Instalar app" hidden>
+        <svg class="icon"><use href="#i-install"/></svg><span class="btn-label">Instalar app</span>
+      </button>
+      <button class="btn btn-ghost" id="openBtn" type="button" aria-label="Abrir videos" title="Abrir videos y verlos ya" hidden>
+        <svg class="icon"><use href="#i-folder"/></svg><span class="btn-label">Abrir</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- first screen: pick something to watch -->
+    <section class="dropzone" id="dropzone">
+      <div class="dropzone-icon"><svg class="icon"><use href="#i-video"/></svg></div>
+      <h1>Abre tus videos</h1>
+      <p>Elige uno o varios archivos<span class="only-mouse"> o arrástralos aquí (con sus subtítulos .srt o .vtt, si tienes)</span>.</p>
+      <button class="btn btn-primary" id="pickBtn" type="button">
+        <svg class="icon"><use href="#i-folder"/></svg>Elegir videos
+      </button>
+      <p class="hint">Se reproducen en tu navegador: nada se sube a ningún lado.</p>
+    </section>
+
+    <!-- the player -->
+    <section class="stage" id="stage" hidden>
+      <div class="player is-paused" id="player">
+        <video id="video" playsinline preload="metadata"></video>
+
+        <div class="pip-note" aria-hidden="true">
+          <svg class="icon"><use href="#i-pip"/></svg>
+          Se está viendo en la ventana flotante
+        </div>
+
+        <!-- the "+10 s" ripples you get when double tapping or skipping -->
+        <div class="seek-flash" id="flashBack" data-side="left" aria-hidden="true">
+          <svg class="icon"><use href="#i-back"/></svg><span></span>
+        </div>
+        <div class="seek-flash" id="flashForward" data-side="right" aria-hidden="true">
+          <svg class="icon"><use href="#i-forward"/></svg><span></span>
+        </div>
+
+        <div class="controls" id="controls">
+          <div class="progress" id="progress" role="slider" tabindex="0" aria-label="Progreso"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="progress-track">
+              <div class="progress-hover"></div>
+              <div class="progress-fill"></div>
+            </div>
+            <div class="progress-thumb"></div>
+            <div class="progress-tooltip" id="tooltip" aria-hidden="true">0:00</div>
+          </div>
+
+          <div class="controls-row">
+            <button class="icon-btn list-only only-mouse" id="prevBtn" data-action="prev" type="button" aria-label="Anterior" title="Anterior">
+              <svg class="icon"><use href="#i-prev"/></svg>
+            </button>
+            <button class="icon-btn only-mouse" id="playBtn" data-action="play" type="button" aria-label="Reproducir" title="Reproducir">
+              <svg class="icon"><use href="#i-play"/></svg>
+            </button>
+            <button class="icon-btn list-only only-mouse" id="nextBtn" data-action="next" type="button" aria-label="Siguiente" title="Siguiente">
+              <svg class="icon"><use href="#i-next"/></svg>
+            </button>
+            <button class="icon-btn skip-btn only-mouse" id="backBtn" data-action="back" type="button" aria-label="Atrasar 10 segundos" title="Atrasar 10 s">
+              <svg class="icon"><use href="#i-back"/></svg>
+            </button>
+            <button class="icon-btn skip-btn only-mouse" id="forwardBtn" data-action="forward" type="button" aria-label="Adelantar 10 segundos" title="Adelantar 10 s">
+              <svg class="icon"><use href="#i-forward"/></svg>
+            </button>
+            <div class="volume">
+              <button class="icon-btn" id="muteBtn" data-action="mute" type="button" aria-label="Silenciar" title="Silenciar">
+                <svg class="icon"><use href="#i-volume-high"/></svg>
+              </button>
+              <input class="volume-slider" id="volume" type="range" min="0" max="1" step="0.01" value="1" aria-label="Volumen">
+            </div>
+            <div class="time">
+              <span id="current">0:00</span><span class="time-total"><span class="time-sep">/</span><span id="duration">0:00</span></span>
+            </div>
+            <div class="spacer"></div>
+            <button class="icon-btn" id="ccBtn" data-action="subs" type="button" aria-label="Subtítulos" title="Subtítulos" aria-haspopup="menu">
+              <svg class="icon"><use href="#i-subtitles"/></svg>
+            </button>
+            <button class="speed-btn" id="speedBtn" data-action="speed" type="button" aria-label="Velocidad" title="Velocidad" aria-haspopup="menu">1×</button>
+            <button class="icon-btn" id="pipBtn" data-action="pip" type="button" aria-label="Ventana flotante" title="Ventana flotante">
+              <svg class="icon"><use href="#i-pip"/></svg>
+            </button>
+            <button class="icon-btn" id="fsBtn" data-action="fullscreen" type="button" aria-label="Pantalla completa" title="Pantalla completa">
+              <svg class="icon"><use href="#i-fullscreen"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- middle buttons: the big play for everyone, ±10 s and prev/next only on touch screens -->
+        <div class="center">
+          <button class="center-btn list-only only-touch" data-action="prev" type="button" aria-label="Anterior">
+            <svg class="icon"><use href="#i-prev"/></svg>
+          </button>
+          <button class="center-btn only-touch" data-action="back" type="button" aria-label="Atrasar 10 segundos">
+            <svg class="icon"><use href="#i-back"/></svg>
+          </button>
+          <button class="big-play" id="bigPlay" data-action="play" type="button" aria-label="Reproducir" title="Reproducir">
+            <svg class="icon"><use href="#i-play"/></svg>
+          </button>
+          <button class="center-btn only-touch" data-action="forward" type="button" aria-label="Adelantar 10 segundos">
+            <svg class="icon"><use href="#i-forward"/></svg>
+          </button>
+          <button class="center-btn list-only only-touch" data-action="next" type="button" aria-label="Siguiente">
+            <svg class="icon"><use href="#i-next"/></svg>
+          </button>
+        </div>
+        <div class="spinner" aria-hidden="true"></div>
+
+        <div class="captions" id="captions" aria-hidden="true"></div>
+        <div class="osd" id="osd" aria-hidden="true"></div>
+        <div class="resume" id="resume" hidden>
+          <span id="resumeText"></span>
+          <button type="button" id="restartBtn">Empezar de cero</button>
+        </div>
+        <div class="menu" id="menu" role="menu" hidden></div>
+      </div>
+
+      <div class="info">
+        <div class="info-text">
+          <h2 class="title" id="title"></h2>
+          <p class="meta" id="meta"></p>
+        </div>
+        <details class="shortcuts only-mouse">
+          <summary>Atajos de teclado</summary>
+          <dl>
+            <div><dt><kbd>Espacio</kbd><kbd>K</kbd></dt><dd>pausa</dd></div>
+            <div><dt><kbd>J</kbd><kbd>L</kbd></dt><dd>−10 / +10 s</dd></div>
+            <div><dt><kbd>←</kbd><kbd>→</kbd></dt><dd>−5 / +5 s</dd></div>
+            <div><dt><kbd>0</kbd>…<kbd>9</kbd></dt><dd>saltar al 0 %…90 %</dd></div>
+            <div><dt><kbd>↑</kbd><kbd>↓</kbd></dt><dd>volumen</dd></div>
+            <div><dt><kbd>M</kbd></dt><dd>silencio</dd></div>
+            <div><dt><kbd>&lt;</kbd><kbd>&gt;</kbd></dt><dd>velocidad</dd></div>
+            <div><dt><kbd>C</kbd></dt><dd>subtítulos</dd></div>
+            <div><dt><kbd>I</kbd></dt><dd>ventana flotante</dd></div>
+            <div><dt><kbd>F</kbd></dt><dd>pantalla completa</dd></div>
+            <div><dt><kbd>Shift</kbd><kbd>N</kbd></dt><dd>siguiente</dd></div>
+            <div><dt><kbd>Shift</kbd><kbd>P</kbd></dt><dd>anterior</dd></div>
+          </dl>
+        </details>
+      </div>
+
+      <section class="playlist" aria-labelledby="playlistTitle">
+        <div class="playlist-head">
+          <h3 class="playlist-title" id="playlistTitle">Lista <span class="playlist-count" id="plCount"></span></h3>
+          <div class="playlist-actions">
+            <button class="btn btn-ghost btn-sm" id="addBtn" type="button" title="Agregar videos al final de la lista">
+              <svg class="icon"><use href="#i-plus"/></svg>Agregar
+            </button>
+            <button class="btn btn-ghost btn-sm" id="clearBtn" type="button">Vaciar</button>
+          </div>
+        </div>
+        <ol class="playlist-items" id="plItems"></ol>
+      </section>
+    </section>
+  </main>
+</div>
+
+<input type="file" id="fileInput" accept="video/*" multiple hidden>
+<input type="file" id="subsInput" accept=".srt,.vtt" hidden>
+
+<div class="drop-overlay" aria-hidden="true">
+  <div class="drop-card">
+    <svg class="icon"><use href="#i-video"/></svg>
+    Suelta los videos (o subtítulos) aquí
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
