@@ -2,10 +2,6 @@
 
 A video player that runs entirely in your browser, on desktop and mobile. No frameworks, no build step, no dependencies: just HTML, CSS and JavaScript.
 
-**Live demo:** https://duxkzy.github.io/VideoPlayer/
-
-> The interface is in Spanish.
-
 ## Features
 
 - Open one or many videos, or drag and drop them onto the page
