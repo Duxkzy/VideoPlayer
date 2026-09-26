@@ -577,7 +577,7 @@ async function readText(file) {
 // works for both formats: all we need is the "start --> end" line and the text under it
 function parseSubtitles(text) {
   const cues = [];
-  const blocks = text.replace(/^﻿/, '').replace(/\r\n?/g, '\n').split(/\n[ \t]*\n/);
+  const blocks = text.replace(/^/, '').replace(/\r\n?/g, '\n').split(/\n[ \t]*\n/);
   for (const block of blocks) {
     const lines = block.split('\n');
     const timing = lines.findIndex((line) => line.includes('-->'));
